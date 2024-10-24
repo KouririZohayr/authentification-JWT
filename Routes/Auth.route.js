@@ -1,19 +1,21 @@
 const express = require('express');
 const router = express.Router();
-const httperrors = require('http-errors')
-const User = require("../Models/User.model")
+const httperrors = require('http-errors');
+const User = require("../Models/User.model");
 
 router.post('/register', async (req, res, next) => {
-    console.log(req.body)
+    console.log(req.body);
     const {
         email,
         password
-    } = req.body
+    } = req.body;
     try {
-        if (!email || !password) throw httperrors.BadRequest()
+        if (!email || !password) throw httperrors.BadRequest();
+        const doesExist = await User.find();
 
-        const doesExist = await User.find({email : email})
-        if(!doesExist) throw httperrors.Conflict(`${email} is already been registred`)
+        if(!doesExist) throw httperrors.Conflict(`${email} is already been registred`);
+        const user = new User({email , password});
+        const userSeved = user.seve();
     } catch (error) {
         next(error)
     }
