@@ -1,9 +1,22 @@
 const express = require('express');
 const router = express.Router();
+const httperrors = require('http-errors')
+const User = require("../Models/User.model")
 
-router.post('/register', async (req, res) => {
-    res.send('register route');
+router.post('/register', async (req, res, next) => {
     console.log(req.body)
+    const {
+        email,
+        password
+    } = req.body
+    try {
+        if (!email || !password) throw httperrors.BadRequest()
+
+        const doesExist = await User.find({email : email})
+        if(!doesExist) throw httperrors.Conflict(`${email} is already been registred`)
+    } catch (error) {
+        next(error)
+    }
 });
 
 router.post('/login', async (req, res) => {
