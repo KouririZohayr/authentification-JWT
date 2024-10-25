@@ -3,7 +3,7 @@ const morgan = require("morgan");
 const createHttpError = require("http-errors");
 const AuthRoute = require("./Routes/Auth.route"); // Your router for auth routes
 require("dotenv").config();
-
+require('./Helpers/init_mongodb')
 const app = express();
 const PORT = process.env.PORT || 3000;
 

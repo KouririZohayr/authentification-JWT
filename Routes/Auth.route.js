@@ -3,12 +3,10 @@ const router = express.Router();
 const httperrors = require('http-errors');
 const User = require("../Models/User.model");
 
+
 router.post('/register', async (req, res, next) => {
     console.log(req.body);
-    const {
-        email,
-        password
-    } = req.body;
+    const {email, password} = req.body;
     try {
         if (!email || !password) throw httperrors.BadRequest();
         const doesExist = await User.find();
