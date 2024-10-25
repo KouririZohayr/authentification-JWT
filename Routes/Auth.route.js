@@ -5,17 +5,37 @@ const User = require("../Models/User.model");
 
 
 router.post('/register', async (req, res, next) => {
-    console.log(req.body);
-    const {email, password} = req.body;
+
+    const {
+        email,
+        password
+    } = req.body;
+
     try {
+        console.log(req.body);
+        const {
+            email,
+            password
+        } = req.body;
+
         if (!email || !password) throw httperrors.BadRequest();
-        const doesExist = await User.find();
-        console.log(res.json(todos));
-        if(!doesExist) throw httperrors.Conflict(`${email} is already been registred`);
-        const user = new User({email , password});
-        const userSeved = user.seve();
+
+        const doesExist = await User.findOne({
+            email
+        });
+        if (doesExist) throw httperrors.Conflict(`${email} is already registered`);
+
+        const user = new User({
+            email,
+            password
+        });
+        await user.save();
+
+        res.status(201).send({
+            message: 'User registered successfully.'
+        });
     } catch (error) {
-        next(error)
+        next(error);
     }
 });
 
