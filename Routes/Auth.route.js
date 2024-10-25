@@ -12,7 +12,7 @@ router.post('/register', async (req, res, next) => {
     try {
         if (!email || !password) throw httperrors.BadRequest();
         const doesExist = await User.find();
-
+        console.log(res.json(todos));
         if(!doesExist) throw httperrors.Conflict(`${email} is already been registred`);
         const user = new User({email , password});
         const userSeved = user.seve();
