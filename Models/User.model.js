@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
-
-const userSchema = mongoose.Schema({
+const bcrypt = require('bcrypt');
+const UserSchema = mongoose.Schema({
     email: {
         type: String,
         required: true,
@@ -16,4 +16,24 @@ const userSchema = mongoose.Schema({
     timestamps: true,
 });
 
-module.exports = mongoose.model('User', userSchema);
+UserSchema.pre('save', async function (next) {
+    try {
+    if (this.isNew) {
+        const salt = await bcrypt.genSalt(10)
+        const hashedPassword = await bcrypt.hash(this.password, salt)
+        this.password = hashedPassword
+    }
+        next()
+    } catch (error) {
+        next(error)
+    }
+})
+UserSchema.methods.isValidPassword = async function (password) {
+    try {
+        return await bcrypt.compare(password, this.password)
+    } catch (error) {
+        throw error
+    }
+}
+
+module.exports = mongoose.model('User', UserSchema);
