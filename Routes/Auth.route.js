@@ -6,7 +6,6 @@ const {signAcesseToken} = require("../Helpers/jwt_token")
 const validator = require('validator');
 
 
-
 router.post('/register', async (req, res, next) => {
 
     const { email,password } = req.body;
