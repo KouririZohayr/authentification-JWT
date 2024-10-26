@@ -2,35 +2,22 @@ const express = require('express');
 const router = express.Router();
 const httperrors = require('http-errors');
 const User = require("../Models/User.model");
+var validator = require('validator');
+
 
 
 router.post('/register', async (req, res, next) => {
 
-    const {
-        email,
-        password
-    } = req.body;
+    const { email,password } = req.body;
 
     try {
         console.log(req.body);
-        const {
-            email,
-            password
-        } = req.body;
-
-        if (!email || !password) throw httperrors.BadRequest();
-
-        const doesExist = await User.findOne({
-            email
-        });
+        const {  email,password} = req.body;
+        if (!validator.isEmail(email)  || !password) throw httperrors.BadRequest();
+        const doesExist = await User.findOne({email});
         if (doesExist) throw httperrors.Conflict(`${email} is already registered`);
-
-        const user = new User({
-            email,
-            password
-        });
+        const user = new User({ email, password});
         await user.save();
-
         res.status(201).send({
             message: 'User registered successfully.'
         });
