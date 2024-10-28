@@ -3,17 +3,17 @@ const router = express.Router();
 const httperrors = require('http-errors');
 const User = require("../Models/User.model");
 const {signAcesseToken} = require("../Helpers/jwt_token")
-const validator = require('validator');
+const authSchema = require('../Helpers/validation_schema');
 
 
 router.post('/register', async (req, res, next) => {
 
-    const { email,password } = req.body;
 
     try {
         console.log(req.body);
         const {  email,password} = req.body;
-        if (!validator.isEmail(email)  || !password) throw httperrors.BadRequest();
+        const validate = await authSchema.validateAsync(req.body)
+        if (!email  || !password) throw httperrors.BadRequest();
         const doesExist = await User.findOne({email});
         if (doesExist) throw httperrors.Conflict(`${email} is already registered`);
         const user = new User({ email, password});
@@ -28,8 +28,20 @@ router.post('/register', async (req, res, next) => {
     }
 });
 
-router.post('/login', async (req, res) => {
-    res.send('login route');
+router.post('/login', async (req, res , next) => {
+   
+    try {
+        const {email , password} = req.body;
+        const validate = await authSchema(req.body)
+        if(!email || !password ) next(httperrors.BadRequest("email or password is requierd"));
+        const isExiste = await User.findOne({email});
+        if(isExiste){
+            res.send(isExiste)
+        }
+
+    } catch (error) {
+        next(error)
+    }
 });
 
 router.post('/refresh-token', async (req, res) => {
